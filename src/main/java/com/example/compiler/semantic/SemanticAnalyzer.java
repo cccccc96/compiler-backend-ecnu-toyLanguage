@@ -95,8 +95,6 @@ public class SemanticAnalyzer {
 
     public void program(boolean expr) throws Exception {
         if (productionList.get(position) == "compoundstmt") {
-            System.out.println(PrintNewBlock());
-            intermediateCodeList.add(PrintNewBlock(-1));
             position++;
             compoundstmt(true);
         }
@@ -225,11 +223,15 @@ public class SemanticAnalyzer {
         Pair<String, Number> syn = arithexpr();              // 先计算出boolop右侧的值
         if (!while_loop) {
             if (assistMap.get(syn.getKey()) == null) {
-                intermediateCodeList.add("if " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " goto L" + (this.label + 1));
-                System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " goto L" + (this.label + 1));
+                intermediateCodeList.add("IF " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " GOTO label" + (this.label + 1));
+                intermediateCodeList.add("GOTO label" + (this.label + 1));
+                System.out.println("IF " + assistMap.get(inh.getKey()) + " " + op + " " + (syn.getKey()) + " GOTO label" + (this.label + 1));
+                System.out.println("GOTO label" + (this.label + 2));
             } else {
-                intermediateCodeList.add("if " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " goto L" + (this.label + 1));
-                System.out.println("if " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " goto L" + (this.label + 1));
+                intermediateCodeList.add("IF " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " GOTO label" + (this.label + 1));
+                intermediateCodeList.add("GOTO label" + (this.label + 1));
+                System.out.println("IF " + assistMap.get(inh.getKey()) + " " + op + " " + assistMap.get(syn.getKey()) + " GOTO label" + (this.label + 1));
+                System.out.println("GOTO label" + (this.label + 2));
             }
         }
         switch (op) {                          // 根据不同的运算符类型执行不同的bool操作
@@ -271,7 +273,6 @@ public class SemanticAnalyzer {
         String temp = productionList.get(position);
         if (temp.equals(TokenType.WHILE.getValue())) {
             System.out.println(PrintNewBlock());
-            intermediateCodeList.add(PrintNewBlock(-1));
             position++;
             boolean condition;
             if (productionList.get(position).equals(TokenType.OPENBRACE.getValue())) {
@@ -292,6 +293,7 @@ public class SemanticAnalyzer {
                             }
                             if (productionList.get(position).equals(NonTerminalType.STMT.getValue())) {
                                 position++;
+                                if (!while_loop) System.out.println(PrintNewBlock());
                                 stmt(condition);
                                 temp_end = position;
                                 while_loop = true;
@@ -299,6 +301,8 @@ public class SemanticAnalyzer {
                         }
                     }
                     while_loop = false;
+                    System.out.println("GOTO label" + (this.label - 1));
+                    System.out.println(PrintNewBlock());
                 }
             }
         }

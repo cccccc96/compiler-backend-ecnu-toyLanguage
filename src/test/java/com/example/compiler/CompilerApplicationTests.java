@@ -118,7 +118,7 @@ class CompilerApplicationTests {
     @Test
     void testPrint() throws IOException {
         Lexer lexer = new Lexer();
-        String input = FileUtils.ReadFile("src/2.txt");
+        String input = FileUtils.ReadFile("src/test.txt");
         System.out.println("--------语法开始 ------");
         LLParser llParser = new LLParser(input);
         llParser.getSyntaxTree().preOrderPrint();
